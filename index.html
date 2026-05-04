@@ -25,18 +25,50 @@ body{
     text-align:center;
 }
 
-/* الدائرة زي الصورة */
-.loader{
-    width:58px;
-    height:58px;
-    border:4px solid #e6e6e6;
-    border-top:4px solid #4a67ff;
-    border-radius:50%;
-    animation:spin 1s linear infinite;
+/* اللودر */
+.tiktok-loader{
+    position: relative;
+    width:70px;
+    height:40px;
     margin:0 auto 18px;
 }
 
-/* علامة الصح زي الصورة */
+/* الكور */
+.ball{
+    position:absolute;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    top:50%;
+    transform:translateY(-50%);
+}
+
+/* الأزرق */
+.blue{
+    background:#00f2ea;
+    animation: moveBlue 1s ease-in-out infinite;
+}
+
+/* الأحمر */
+.red{
+    background:#ff0050;
+    animation: moveRed 1s ease-in-out infinite;
+}
+
+/* حركة يمين شمال */
+@keyframes moveBlue{
+    0%{ left:5px; }
+    50%{ left:45px; }
+    100%{ left:5px; }
+}
+
+@keyframes moveRed{
+    0%{ left:45px; }
+    50%{ left:5px; }
+    100%{ left:45px; }
+}
+
+/* علامة الصح */
 .success{
     display:none;
     width:62px;
@@ -58,27 +90,27 @@ body{
     transform:translate(-50%,-55%);
 }
 
-@keyframes spin{
-    100%{
-        transform:rotate(360deg);
-    }
-}
-
-/* الكلام */
+/* النص */
 .text{
     font-size:22px;
     color:#222;
     font-weight:500;
-    letter-spacing:0;
 }
+
 </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="loader" id="loader"></div>
+    
+    <div class="tiktok-loader" id="loader">
+        <div class="ball blue"></div>
+        <div class="ball red"></div>
+    </div>
+
     <div class="success" id="success"></div>
     <div class="text" id="status">جاري الانتظار...</div>
+
 </div>
 
 <script>
@@ -86,7 +118,7 @@ setTimeout(function(){
     document.getElementById("loader").style.display = "none";
     document.getElementById("success").style.display = "block";
     document.getElementById("status").innerText = "تم التأكيد بنجاح";
-},4000);
+},3000);
 </script>
 
 </body>
