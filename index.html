@@ -1,134 +1,92 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تم الإرسال بنجاح</title>
+<title>جاري الانتظار</title>
 
 <style>
-body{
+*{
     margin:0;
     padding:0;
-    background:#0f1115;
+    box-sizing:border-box;
+    font-family: Arial, sans-serif;
+}
+
+body{
+    background:#f8f8f8;
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
-    font-family:Arial, sans-serif;
 }
 
-/* الكارد */
-.box{
-    background:#161b22;
-    width:320px;
-    padding:40px 30px;
-    border-radius:20px;
+.container{
     text-align:center;
-    box-shadow:0 0 25px rgba(0,0,0,0.4);
 }
 
-/* دائرة التحميل */
+/* الدائرة زي الصورة */
 .loader{
-    border:8px solid rgba(255,255,255,0.08);
-    border-top:8px solid #00c3ff;
+    width:58px;
+    height:58px;
+    border:4px solid #e6e6e6;
+    border-top:4px solid #4a67ff;
     border-radius:50%;
-    width:90px;
-    height:90px;
-    margin:auto;
     animation:spin 1s linear infinite;
+    margin:0 auto 18px;
 }
 
-/* علامة الصح */
+/* علامة الصح زي الصورة */
 .success{
     display:none;
-    width:100px;
-    height:100px;
-    margin:auto;
+    width:62px;
+    height:62px;
+    background:#2dbf4f;
     border-radius:50%;
-    background:rgba(0,255,120,0.08);
-    border:2px solid rgba(0,255,120,0.25);
-    box-shadow:0 0 20px rgba(0,255,120,0.15);
-    justify-content:center;
-    align-items:center;
-    font-size:55px;
-    color:#00ff88;
+    position:relative;
+    margin:0 auto 18px;
 }
 
-/* النص */
-.title{
+.success::after{
+    content:"✓";
     color:white;
-    font-size:24px;
-    margin-top:25px;
+    font-size:42px;
     font-weight:bold;
-}
-
-.desc{
-    color:#b8c1cc;
-    font-size:15px;
-    margin-top:10px;
-    line-height:1.6;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-55%);
 }
 
 @keyframes spin{
-    0%{
-        transform:rotate(0deg);
-    }
     100%{
         transform:rotate(360deg);
     }
+}
+
+/* الكلام */
+.text{
+    font-size:22px;
+    color:#222;
+    font-weight:500;
+    letter-spacing:0;
 }
 </style>
 </head>
 <body>
 
-<div class="box">
-
-    <div id="loader" class="loader"></div>
-
-    <div id="success" class="success">
-        ✔
-    </div>
-
-    <div id="title" class="title">
-        جاري الإرسال...
-    </div>
-
-    <div id="desc" class="desc">
-        الرجاء الانتظار قليلاً حتى يتم تنفيذ العملية بنجاح
-    </div>
-
+<div class="container">
+    <div class="loader" id="loader"></div>
+    <div class="success" id="success"></div>
+    <div class="text" id="status">جاري الانتظار...</div>
 </div>
 
 <script>
-function cycle(){
-
-    let loader = document.getElementById("loader");
-    let success = document.getElementById("success");
-    let title = document.getElementById("title");
-    let desc = document.getElementById("desc");
-
-    loader.style.display = "block";
-    success.style.display = "none";
-
-    title.innerHTML = "... جاري الإرسال";
-    desc.innerHTML = "الرجاء الانتظار قليلاً حتى يتم تنفيذ العملية بنجاح";
-
-    setTimeout(() => {
-
-        loader.style.display = "none";
-        success.style.display = "flex";
-
-        title.innerHTML = "تم الإرسال بنجاح";
-        desc.innerHTML = "تم تحرير العملات بنجاح";
-
-        setTimeout(() => {
-            cycle();
-        }, 10000);
-
-    }, 3000);
-}
-
-window.onload = cycle;
+setTimeout(function(){
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("success").style.display = "block";
+    document.getElementById("status").innerText = "تم التأكيد بنجاح";
+},4000);
 </script>
 
 </body>
