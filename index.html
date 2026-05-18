@@ -1,124 +1,347 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>جاري الانتظار</title>
+
+<title>KIDS ARABIC</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family: Arial, sans-serif;
-}
 
 body{
-    background:#f8f8f8;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+margin:0;
+background:black;
+overflow:hidden;
+font-family:Tahoma;
 }
 
-.container{
-    text-align:center;
+/* اللاعب */
+
+.player{
+
+position:relative;
+
+width:100%;
+
+height:100vh;
+
+background:black;
+
+overflow:hidden;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
 }
 
-/* اللودر */
-.tiktok-loader{
-    position: relative;
-    width:70px;
-    height:40px;
-    margin:0 auto 18px;
+/* الفيديو */
+
+video{
+
+position:absolute;
+
+top:50%;
+
+left:50%;
+
+transform:translate(-50%,-50%);
+
+width:100%;
+
+height:auto;
+
+max-height:56.25vw;
+
+background:black;
+
 }
 
-/* الكور */
-.ball{
-    position:absolute;
-    width:18px;
-    height:18px;
-    border-radius:50%;
-    top:50%;
-    transform:translateY(-50%);
+/* شاشة الألوان */
+
+#noise{
+
+position:fixed;
+
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+display:none;
+
+z-index:999;
+
+background:
+linear-gradient(
+90deg,
+red,
+yellow,
+lime,
+cyan,
+blue,
+magenta
+);
+
+animation:tv 0.2s infinite;
+
 }
 
-/* الأزرق */
-.blue{
-    background:#00f2ea;
-    animation: moveBlue 1s ease-in-out infinite;
+@keyframes tv{
+
+0%{
+filter:brightness(1);
 }
 
-/* الأحمر */
-.red{
-    background:#ff0050;
-    animation: moveRed 1s ease-in-out infinite;
+50%{
+filter:brightness(0.7);
 }
 
-/* حركة يمين شمال */
-@keyframes moveBlue{
-    0%{ left:5px; }
-    50%{ left:45px; }
-    100%{ left:5px; }
+100%{
+filter:brightness(1.1);
 }
 
-@keyframes moveRed{
-    0%{ left:45px; }
-    50%{ left:5px; }
-    100%{ left:45px; }
 }
 
-/* علامة الصح */
-.success{
-    display:none;
-    width:62px;
-    height:62px;
-    background:#2dbf4f;
-    border-radius:50%;
-    position:relative;
-    margin:0 auto 18px;
+/* اللوجو */
+
+.logoBox{
+
+position:absolute;
+
+top:37%;
+
+right:22px;
+
+transform:translateY(-50%);
+
+z-index:999999;
+
+pointer-events:none;
+
 }
 
-.success::after{
-    content:"✓";
-    color:white;
-    font-size:42px;
-    font-weight:bold;
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-55%);
+/* صورة اللوجو */
+
+.logo{
+
+width:55px;
+
+height:55px;
+
+object-fit:contain;
+
+filter:
+drop-shadow(0 0 5px black)
+drop-shadow(0 0 10px black);
+
 }
 
-/* النص */
-.text{
-    font-size:22px;
-    color:#222;
-    font-weight:500;
+/* اسم الكرتون */
+
+#movieName{
+
+position:absolute;
+
+top:37%;
+
+left:22px;
+
+transform:translateY(-50%);
+
+z-index:999999;
+
+color:white;
+
+font-size:18px;
+
+font-weight:bold;
+
+text-shadow:
+0 0 5px black,
+0 0 10px black,
+0 0 20px black;
+
+pointer-events:none;
+
 }
 
 </style>
 </head>
 <body>
 
-<div class="container">
-    
-    <div class="tiktok-loader" id="loader">
-        <div class="ball blue"></div>
-        <div class="ball red"></div>
-    </div>
+<!-- شاشة الألوان -->
 
-    <div class="success" id="success"></div>
-    <div class="text" id="status">جاري الانتظار...</div>
+<div id="noise"></div>
+
+<div class="player">
+
+<!-- اللوجو -->
+
+<div class="logoBox">
+
+<img id="logo" class="logo" src="">
 
 </div>
 
+<!-- اسم الفيلم -->
+
+<div id="movieName"></div>
+
+<!-- الفيديو -->
+
+<video
+id="video"
+autoplay
+playsinline
+controls>
+</video>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
-setTimeout(function(){
-    document.getElementById("loader").style.display = "none";
-    document.getElementById("success").style.display = "block";
-    document.getElementById("status").innerText = "تم التأكيد بنجاح";
-},3000);
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyAUc2cH9gVE7RECiW19XQXjNZQxVH96sFE",
+
+authDomain: "zezo-59a8d.firebaseapp.com",
+
+databaseURL: "https://zezo-59a8d-default-rtdb.firebaseio.com",
+
+projectId: "zezo-59a8d",
+
+storageBucket: "zezo-59a8d.appspot.com",
+
+messagingSenderId: "49183098248",
+
+appId: "1:49183098248:web:37e3fb16744042a1bb263d"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+
+const video = document.getElementById("video");
+
+const noise = document.getElementById("noise");
+
+/* مشاهدة */
+
+const userRef = db.ref(
+"watching/" +
+Math.random().toString(36).substr(2,9)
+);
+
+userRef.set(true);
+
+userRef.onDisconnect().remove();
+
+/* البث */
+
+db.ref("kids-tv").on("value",(snap)=>{
+
+const data = snap.val();
+
+/* القناة مقفولة */
+
+if(!data || data.status == false){
+
+video.style.display = "none";
+
+noise.style.display = "block";
+
+return;
+
+}
+
+/* إخفاء شاشة الألوان */
+
+noise.style.display = "none";
+
+video.style.display = "block";
+
+/* اسم الفيلم */
+
+document.getElementById("movieName").innerText =
+data.name || "";
+
+/* اللوجو */
+
+document.getElementById("logo").src =
+data.logo || "";
+
+/* تشغيل الفيديو */
+
+video.src = data.video;
+
+/* تحميل الفيديو */
+
+video.onloadedmetadata = function(){
+
+const now = Date.now();
+
+const passed =
+Math.floor((now - data.startTime) / 1000);
+
+/* لو خلص */
+
+if(video.duration && passed >= video.duration){
+
+video.style.display = "none";
+
+noise.style.display = "block";
+
+return;
+
+}
+
+/* يكمل من الوقت الحالي */
+
+if(video.duration){
+
+video.currentTime = passed;
+
+}
+
+/* تشغيل */
+
+video.play();
+
+};
+
+/* منع التقديم */
+
+video.onseeking = function(){
+
+const now = Date.now();
+
+const passed =
+Math.floor((now - data.startTime) / 1000);
+
+video.currentTime = passed;
+
+};
+
+/* لما يخلص */
+
+video.onended = function(){
+
+video.style.display = "none";
+
+noise.style.display = "block";
+
+};
+
+});
+
 </script>
 
 </body>
