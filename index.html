@@ -3,11 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>KIDS ARABIC</title>
+<title>KIDS TV</title>
 
 <style>
-
 body{
 margin:0;
 background:black;
@@ -15,190 +13,78 @@ overflow:hidden;
 font-family:Tahoma;
 }
 
-/* اللاعب */
-
-.player{
-
-position:relative;
-
-width:100%;
-
-height:100vh;
-
-background:black;
-
-overflow:hidden;
-
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
-}
-
-/* الفيديو */
-
-video{
-
-position:absolute;
-
-top:50%;
-
-left:50%;
-
-transform:translate(-50%,-50%);
-
-width:100%;
-
-height:auto;
-
-max-height:56.25vw;
-
-background:black;
-
-}
-
-/* شاشة الألوان */
-
-#noise{
-
+/* شاشة الإيقاف */
+#tvOff{
 position:fixed;
-
-top:0;
-left:0;
-
 width:100%;
 height:100%;
-
+background:black;
 display:none;
-
+justify-content:center;
+align-items:center;
 z-index:999;
-
-background:
-linear-gradient(
-90deg,
-red,
-yellow,
-lime,
-cyan,
-blue,
-magenta
-);
-
-animation:tv 0.2s infinite;
-
 }
 
-@keyframes tv{
-
-0%{
-filter:brightness(1);
+.offText{
+color:white;
+font-size:35px;
+font-weight:bold;
 }
 
-50%{
-filter:brightness(0.7);
+/* المشغل */
+.player{
+position:relative;
+width:100%;
+height:100vh;
+background:black;
+overflow:hidden;
 }
 
-100%{
-filter:brightness(1.1);
-}
-
+/* iframe */
+iframe{
+width:100%;
+height:100vh;
+border:none;
 }
 
 /* اللوجو */
-
 .logoBox{
-
 position:absolute;
-
-top:37%;
-
-right:22px;
-
-transform:translateY(-50%);
-
-z-index:999999;
-
+top:35%;
+right:20px;
+z-index:99999;
 pointer-events:none;
-
 }
 
-/* صورة اللوجو */
-
 .logo{
-
-width:55px;
-
-height:55px;
-
+width:60px;
+height:60px;
 object-fit:contain;
 
 filter:
-drop-shadow(0 0 5px black)
-drop-shadow(0 0 10px black);
-
+drop-shadow(0 0 6px black)
+drop-shadow(0 0 12px black);
 }
-
-/* اسم الكرتون */
-
-#movieName{
-
-position:absolute;
-
-top:37%;
-
-left:22px;
-
-transform:translateY(-50%);
-
-z-index:999999;
-
-color:white;
-
-font-size:18px;
-
-font-weight:bold;
-
-text-shadow:
-0 0 5px black,
-0 0 10px black,
-0 0 20px black;
-
-pointer-events:none;
-
-}
-
 </style>
 </head>
+
 <body>
 
-<!-- شاشة الألوان -->
-
-<div id="noise"></div>
-
-<div class="player">
-
-<!-- اللوجو -->
-
-<div class="logoBox">
-
-<img id="logo" class="logo" src="">
-
+<!-- شاشة الإيقاف -->
+<div id="tvOff">
+<div class="offText">
+📺 القناة غير شغالة الآن
+</div>
 </div>
 
-<!-- اسم الفيلم -->
+<!-- المشغل -->
+<div class="player">
 
-<div id="movieName"></div>
+<div class="logoBox">
+<img id="logo" class="logo" src="">
+</div>
 
-<!-- الفيديو -->
-
-<video
-id="video"
-autoplay
-playsinline
-controls>
-</video>
+<iframe id="frame" allow="autoplay; fullscreen" allowfullscreen></iframe>
 
 </div>
 
@@ -208,137 +94,48 @@ controls>
 <script>
 
 const firebaseConfig = {
-
 apiKey: "AIzaSyAUc2cH9gVE7RECiW19XQXjNZQxVH96sFE",
-
 authDomain: "zezo-59a8d.firebaseapp.com",
-
 databaseURL: "https://zezo-59a8d-default-rtdb.firebaseio.com",
-
 projectId: "zezo-59a8d",
-
 storageBucket: "zezo-59a8d.appspot.com",
-
 messagingSenderId: "49183098248",
-
 appId: "1:49183098248:web:37e3fb16744042a1bb263d"
-
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const db = firebase.database();
 
-const video = document.getElementById("video");
-
-const noise = document.getElementById("noise");
+const frame = document.getElementById("frame");
 
 /* مشاهدة */
-
-const userRef = db.ref(
-"watching/" +
-Math.random().toString(36).substr(2,9)
-);
-
+const userRef = db.ref("watching/" + Math.random().toString(36).substr(2,9));
 userRef.set(true);
-
 userRef.onDisconnect().remove();
 
-/* البث */
-
+/* متابعة الحالة */
 db.ref("kids-tv").on("value",(snap)=>{
 
 const data = snap.val();
 
-/* القناة مقفولة */
+/* لو مش شغال أو مفيش رابط */
+if(!data || data.status == false || !data.url){
 
-if(!data || data.status == false){
-
-video.style.display = "none";
-
-noise.style.display = "block";
+document.getElementById("tvOff").style.display="flex";
+frame.style.display="none";
+frame.src = ""; // يمنع 404
 
 return;
-
 }
 
-/* إخفاء شاشة الألوان */
+/* لو شغال */
+document.getElementById("tvOff").style.display="none";
+frame.style.display="block";
 
-noise.style.display = "none";
-
-video.style.display = "block";
-
-/* اسم الفيلم */
-
-document.getElementById("movieName").innerText =
-data.name || "";
+frame.src = data.url;
 
 /* اللوجو */
-
-document.getElementById("logo").src =
-data.logo || "";
-
-/* تشغيل الفيديو */
-
-video.src = data.video;
-
-/* تحميل الفيديو */
-
-video.onloadedmetadata = function(){
-
-const now = Date.now();
-
-const passed =
-Math.floor((now - data.startTime) / 1000);
-
-/* لو خلص */
-
-if(video.duration && passed >= video.duration){
-
-video.style.display = "none";
-
-noise.style.display = "block";
-
-return;
-
-}
-
-/* يكمل من الوقت الحالي */
-
-if(video.duration){
-
-video.currentTime = passed;
-
-}
-
-/* تشغيل */
-
-video.play();
-
-};
-
-/* منع التقديم */
-
-video.onseeking = function(){
-
-const now = Date.now();
-
-const passed =
-Math.floor((now - data.startTime) / 1000);
-
-video.currentTime = passed;
-
-};
-
-/* لما يخلص */
-
-video.onended = function(){
-
-video.style.display = "none";
-
-noise.style.display = "block";
-
-};
+document.getElementById("logo").src = data.logo;
 
 });
 
